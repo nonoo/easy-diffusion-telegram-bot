@@ -3,6 +3,8 @@
 This is a Telegram Bot frontend for rendering images with
 [Easy Diffusion](https://github.com/easydiffusion/easydiffusion).
 
+<p align="center"><img src="demo.gif?raw=true"/></p>
+
 The bot displays the progress and further information during processing by
 responding to the message with the prompt. Requests are queued, only one gets
 processed at a time.
