@@ -31,7 +31,7 @@ func sendReplyToMessage(ctx context.Context, replyToMsg *models.Message, s strin
 func handleCmdED(ctx context.Context, msg *models.Message) {
 	renderParams := RenderParams{
 		OrigPrompt:        msg.Text,
-		Seed:              rand.Uint64(),
+		Seed:              rand.Uint32(),
 		Width:             512,
 		Height:            512,
 		NumInferenceSteps: 25,
@@ -60,7 +60,7 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 					sendReplyToMessage(ctx, msg, errorStr+": invalid seed")
 					return
 				}
-				renderParams.Seed = valInt.Uint64()
+				renderParams.Seed = uint32(valInt.Uint64())
 			case "width", "w":
 				valInt, err := strconv.Atoi(val)
 				if err != nil {

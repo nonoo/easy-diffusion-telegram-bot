@@ -84,7 +84,7 @@ type RenderReq struct {
 	OutputQuality           uint32   `json:"output_quality"`
 	Prompt                  string   `json:"prompt"`
 	SamplerName             string   `json:"sampler_name"`
-	Seed                    uint64   `json:"seed"`
+	Seed                    uint32   `json:"seed"`
 	SessionID               string   `json:"session_id"`
 	ShowOnlyFilteredImage   bool     `json:"show_only_filtered_image"`
 	StreamImageProgress     bool     `json:"stream_image_progress"`
@@ -100,7 +100,7 @@ type RenderReq struct {
 type RenderParams struct {
 	Prompt            string
 	OrigPrompt        string
-	Seed              uint64
+	Seed              uint32
 	Width             int
 	Height            int
 	NumInferenceSteps int
