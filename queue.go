@@ -195,6 +195,10 @@ func (q *DownloadQueue) processQueueEntry(renderCtx context.Context, qEntry *Dow
 		qEntry.Params.GuidanceScale, qEntry.Params.Width, qEntry.Params.Height, qEntry.Params.NumOutputs, qEntry.Params.SamplerName,
 		qEntry.Params.ModelName)
 
+	if qEntry.Params.NegativePrompt != "" {
+		qEntry.RenderParamsText = "📍" + qEntry.Params.NegativePrompt + " " + qEntry.RenderParamsText
+	}
+
 	qEntry.sendReply(q.ctx, processStartStr+"\n"+qEntry.RenderParamsText)
 
 	var err error
