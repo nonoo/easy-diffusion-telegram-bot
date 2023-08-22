@@ -19,6 +19,7 @@ type paramsType struct {
 	AllowedGroupIDs []int64
 
 	DelayedEDStart bool
+	DefaultModel   string
 }
 
 var params paramsType
@@ -33,6 +34,7 @@ func (p *paramsType) Init() error {
 	var allowedGroupIDs string
 	flag.StringVar(&allowedGroupIDs, "allowed-group-ids", "", "allowed telegram group ids")
 	flag.BoolVar(&p.DelayedEDStart, "delayed-ed-start", false, "start easy diffusion only when the first prompt arrives")
+	flag.StringVar(&p.DefaultModel, "default-model", "", "default model name")
 	flag.Parse()
 
 	if p.BotToken == "" {
@@ -104,6 +106,10 @@ func (p *paramsType) Init() error {
 		} else {
 			p.DelayedEDStart = true
 		}
+	}
+
+	if p.DefaultModel == "" {
+		p.DefaultModel = os.Getenv("DEFAULT_MODEL")
 	}
 
 	return nil

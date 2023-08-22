@@ -42,7 +42,7 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 		NumOutputs:        4,
 		GuidanceScale:     7,
 		SamplerName:       "dpmpp_sde",
-		ModelName:         "v1-5",
+		ModelName:         params.DefaultModel,
 	}
 
 	var prompt []string

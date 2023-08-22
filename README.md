@@ -61,6 +61,7 @@ variable. Available OS environment variables are:
 - `ADMIN_USERIDS`
 - `ALLOWED_GROUPIDS`
 - `DELAYED_ED_START`
+- `DEFAULT_MODEL`
 
 ## Supported commands
 
