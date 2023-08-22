@@ -191,9 +191,9 @@ func (q *DownloadQueue) queryProgress(qEntry *DownloadQueueEntry, prevProgress i
 func (q *DownloadQueue) processQueueEntry(renderCtx context.Context, qEntry *DownloadQueueEntry, retryAllowed bool) error {
 	fmt.Print("processing request from ", qEntry.Message.From.Username, "#", qEntry.Message.From.ID, ": ", qEntry.Params.Prompt, "\n")
 
-	qEntry.RenderParamsText = fmt.Sprintf("🌱0x%X 👟%d 🕹%.1f 🖼%dx%dx%d 🔭%s/%d", qEntry.Params.Seed, qEntry.Params.NumInferenceSteps,
+	qEntry.RenderParamsText = fmt.Sprintf("🌱0x%X 👟%d 🕹%.1f 🖼%dx%dx%d 🔭%s 🧩%s", qEntry.Params.Seed, qEntry.Params.NumInferenceSteps,
 		qEntry.Params.GuidanceScale, qEntry.Params.Width, qEntry.Params.Height, qEntry.Params.NumOutputs, qEntry.Params.SamplerName,
-		qEntry.Params.ModelVersion)
+		qEntry.Params.ModelName)
 
 	qEntry.sendReply(q.ctx, processStartStr+"\n"+qEntry.RenderParamsText)
 

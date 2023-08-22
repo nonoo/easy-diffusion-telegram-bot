@@ -41,8 +41,8 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 		NumInferenceSteps: 20,
 		NumOutputs:        4,
 		GuidanceScale:     7,
-		SamplerName:       "dpmpp_sde",
-		ModelVersion:      2,
+		SamplerName:       "dpmpp_2m_sde",
+		ModelName:         "v1-5",
 	}
 
 	var prompt []string
@@ -54,7 +54,7 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 		splitword := strings.Split(words[i], ":")
 		if len(splitword) == 2 {
 			attr := strings.ToLower(splitword[0])
-			val := strings.ToLower(splitword[1])
+			val := splitword[1]
 
 			switch attr {
 			case "seed", "s":
@@ -107,6 +107,7 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 				}
 				renderParams.GuidanceScale = float32(valFloat)
 			case "sampler", "r":
+				val = strings.ToLower(val)
 				switch val {
 				case "plms", "ddim", "heun", "euler", "euler_a", "dpm2", "dpm2_a", "lms",
 					"dpm_solver_stability", "dpmpp_2s_a", "dpmpp_2m", "dpmpp_2m_sde",
@@ -119,13 +120,7 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 					return
 				}
 			case "model", "m":
-				valInt, err := strconv.Atoi(val)
-				if err != nil {
-					fmt.Println("  invalid model version")
-					sendReplyToMessage(ctx, msg, errorStr+": invalid model version")
-					return
-				}
-				renderParams.ModelVersion = valInt
+				renderParams.ModelName = val
 			default:
 				fmt.Println("  invalid attribute", attr)
 				sendReplyToMessage(ctx, msg, errorStr+": invalid attribute "+attr)
