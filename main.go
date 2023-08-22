@@ -41,7 +41,7 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 		NumInferenceSteps: 20,
 		NumOutputs:        4,
 		GuidanceScale:     7,
-		SamplerName:       "dpmpp_sde",
+		SamplerName:       params.DefaultSampler,
 		ModelName:         params.DefaultModel,
 	}
 

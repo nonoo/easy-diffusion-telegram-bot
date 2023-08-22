@@ -62,6 +62,7 @@ variable. Available OS environment variables are:
 - `ALLOWED_GROUPIDS`
 - `DELAYED_ED_START`
 - `DEFAULT_MODEL`
+- `DEFAULT_SAMPLER`
 
 ## Supported commands
 
