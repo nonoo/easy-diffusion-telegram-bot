@@ -73,7 +73,10 @@ func (e *DownloadQueueEntry) sendImages(ctx context.Context, imgs [][]byte) {
 		ReplyToMessageID: e.Message.ID,
 		Media:            media,
 	}
-	_, _ = telegramBot.SendMediaGroup(ctx, params)
+	_, err := telegramBot.SendMediaGroup(ctx, params)
+	if err != nil {
+		fmt.Println("  send images error:", err)
+	}
 }
 
 func (e *DownloadQueueEntry) deleteReply(ctx context.Context) {
@@ -223,6 +226,7 @@ checkLoop:
 		}
 	}
 
+	fmt.Println("  uploading...")
 	qEntry.sendReply(q.ctx, uploadingStr+"\n"+qEntry.RenderParamsText)
 	qEntry.sendImages(q.ctx, imgs)
 	qEntry.deleteReply(q.ctx)
