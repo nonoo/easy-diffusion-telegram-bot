@@ -159,6 +159,9 @@ func (r *ReqType) Render(params RenderParams) (taskID uint64, err error) {
 	if err != nil || renderResp.Status != "Online" {
 		return 0, err
 	}
+	if renderResp.Task == 0 {
+		return 0, fmt.Errorf("unknown error")
+	}
 
 	return renderResp.Task, nil
 }
