@@ -111,8 +111,13 @@ type RenderParams struct {
 }
 
 func (r *ReqType) Render(params RenderParams) (taskID uint64, err error) {
-	model := "sd-v1-4"
-	if params.ModelVersion == 2 {
+	var model string
+	switch params.ModelVersion {
+	default:
+		model = "sd-v1-4"
+	case 2:
+		model = "v1-5-pruned-emaonly"
+	case 3:
 		model = "768-v-ema"
 	}
 

@@ -88,7 +88,7 @@ You can use the following `attr:val` assignments in the prompt:
   - `ddim`
   - `heun`
   - `euler`
-  - `euler_a` (default)
+  - `euler_a`
   - `dpm2`
   - `dpm2_a`
   - `lms`
@@ -96,7 +96,7 @@ You can use the following `attr:val` assignments in the prompt:
   - `dpmpp_2s_a`
   - `dpmpp_2m`
   - `dpmpp_2m_sde`
-  - `dpmpp_sde`
+  - `dpmpp_sde` (default)
   - `dpm_adaptive`
   - `ddpm`
   - `deis`
@@ -105,7 +105,10 @@ You can use the following `attr:val` assignments in the prompt:
   - `unipc_snr_2`
   - `unipc_tu_2`
   - `unipc_tq`
-- `model/m` - set model version (default is 2 using [768-v-ema.ckpt](https://huggingface.co/stabilityai/stable-diffusion-2)
+- `model/m` - set model version:
+  - 1: sd-v1-4
+  - 2: [v1-5-pruned-emaonly](https://huggingface.co/runwayml/stable-diffusion-v1-5)
+  - 3: [768-v-ema](https://huggingface.co/stabilityai/stable-diffusion-2)
 
 Example prompt with attributes: `laughing santa with beer s:1 o:1`
 

@@ -38,10 +38,10 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 		Seed:              rand.Uint32(),
 		Width:             512,
 		Height:            512,
-		NumInferenceSteps: 25,
+		NumInferenceSteps: 20,
 		NumOutputs:        4,
-		GuidanceScale:     7.5,
-		SamplerName:       "euler_a",
+		GuidanceScale:     7,
+		SamplerName:       "dpmpp_sde",
 		ModelVersion:      2,
 	}
 
