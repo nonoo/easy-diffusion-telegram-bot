@@ -188,6 +188,13 @@ func telegramBotUpdateHandler(ctx context.Context, b *bot.Bot, update *models.Up
 		case "edhelp":
 			handleCmdHelp(ctx, update.Message)
 			return
+		case "start":
+			fmt.Println("  (start cmd)")
+			if update.Message.Chat.ID >= 0 { // From user?
+				sendReplyToMessage(ctx, update.Message, "🤖 Welcome! This is a Telegram Bot frontend "+
+					"for rendering images with Easy Diffusion.\n\nMore info: https://github.com/nonoo/easy-diffusion-telegram-bot")
+			}
+			return
 		default:
 			fmt.Println("  (invalid cmd)")
 			if update.Message.Chat.ID >= 0 {
@@ -197,7 +204,7 @@ func telegramBotUpdateHandler(ctx context.Context, b *bot.Bot, update *models.Up
 		}
 	}
 
-	if update.Message.Chat.ID >= 0 {
+	if update.Message.Chat.ID >= 0 { // From user?
 		handleCmdED(ctx, update.Message)
 	}
 }
