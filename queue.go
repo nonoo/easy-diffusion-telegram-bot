@@ -5,6 +5,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
+	"strconv"
 	"sync"
 	"syscall"
 	"time"
@@ -36,6 +38,20 @@ type DownloadQueueEntry struct {
 	Message      *models.Message
 }
 
+func (e *DownloadQueueEntry) checkWaitError(err error) time.Duration {
+	var retryRegex = regexp.MustCompile(`{"retry_after":([0-9]+)}`)
+	match := retryRegex.FindStringSubmatch(err.Error())
+	if len(match) < 2 {
+		return 0
+	}
+
+	retryAfter, err := strconv.Atoi(match[1])
+	if err != nil {
+		return 0
+	}
+	return time.Duration(retryAfter) * time.Second
+}
+
 func (e *DownloadQueueEntry) sendReply(ctx context.Context, s string) {
 	if e.ReplyMessage == nil {
 		e.ReplyMessage = sendReplyToMessage(ctx, e.Message, s)
@@ -48,11 +64,15 @@ func (e *DownloadQueueEntry) sendReply(ctx context.Context, s string) {
 		})
 		if err != nil {
 			fmt.Println("  reply edit error:", err)
+
+			waitNeeded := e.checkWaitError(err)
+			fmt.Println("  waiting", waitNeeded, "...")
+			time.Sleep(waitNeeded)
 		}
 	}
 }
 
-func (e *DownloadQueueEntry) sendImages(ctx context.Context, imgs [][]byte) {
+func (e *DownloadQueueEntry) sendImages(ctx context.Context, imgs [][]byte, retryAllowed bool) {
 	if len(imgs) == 0 {
 		return
 	}
@@ -77,6 +97,18 @@ func (e *DownloadQueueEntry) sendImages(ctx context.Context, imgs [][]byte) {
 	_, err := telegramBot.SendMediaGroup(ctx, params)
 	if err != nil {
 		fmt.Println("  send images error:", err)
+
+		if !retryAllowed {
+			return
+		}
+
+		retryAfter := e.checkWaitError(err)
+		if retryAfter > 0 {
+			fmt.Println("  retrying after", retryAfter, "...")
+			time.Sleep(retryAfter)
+			e.sendImages(ctx, imgs, false)
+			return
+		}
 	}
 }
 
@@ -229,7 +261,7 @@ checkLoop:
 
 	fmt.Println("  uploading...")
 	qEntry.sendReply(q.ctx, uploadingStr+"\n"+qEntry.RenderParamsText)
-	qEntry.sendImages(q.ctx, imgs)
+	qEntry.sendImages(q.ctx, imgs, true)
 	qEntry.deleteReply(q.ctx)
 
 	return nil

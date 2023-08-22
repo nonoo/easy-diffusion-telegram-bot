@@ -42,7 +42,7 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 		NumOutputs:        4,
 		GuidanceScale:     7.5,
 		SamplerName:       "euler_a",
-		ModelVersion:      1,
+		ModelVersion:      2,
 	}
 
 	var prompt []string
