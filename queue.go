@@ -23,6 +23,8 @@ const restartStr = "⚠️ Easy Diffusion is not running, starting, please wait.
 const restartFailedStr = "☠️ Easy Diffusion start failed, please restart the bot"
 
 const processTimeout = 3 * time.Minute
+const groupChatProgressUpdateInterval = 3 * time.Second
+const privateChatProgressUpdateInterval = 500 * time.Millisecond
 
 type DownloadQueueEntry struct {
 	Params RenderParams
@@ -37,12 +39,15 @@ type DownloadQueueEntry struct {
 func (e *DownloadQueueEntry) sendReply(ctx context.Context, s string) {
 	if e.ReplyMessage == nil {
 		e.ReplyMessage = sendReplyToMessage(ctx, e.Message, s)
-	} else {
-		_, _ = telegramBot.EditMessageText(ctx, &bot.EditMessageTextParams{
+	} else if e.ReplyMessage.Text != s {
+		_, err := telegramBot.EditMessageText(ctx, &bot.EditMessageTextParams{
 			MessageID: e.ReplyMessage.ID,
 			ChatID:    e.ReplyMessage.Chat.ID,
 			Text:      s,
 		})
+		if err != nil {
+			fmt.Println("  reply edit error:", err)
+		}
 	}
 }
 
@@ -99,20 +104,15 @@ type DownloadQueue struct {
 func (q *DownloadQueue) Add(params RenderParams, message *models.Message) {
 	q.mutex.Lock()
 
-	var replyStr string
-	if len(q.entries) == 0 {
-		replyStr = processStartStr
-	} else {
-		fmt.Println("  queueing request at position #", len(q.entries))
-		replyStr = q.getQueuePositionString(len(q.entries))
-	}
-
 	newEntry := DownloadQueueEntry{
 		Params:  params,
 		Message: message,
 	}
 
-	newEntry.sendReply(q.ctx, replyStr)
+	if len(q.entries) > 0 {
+		fmt.Println("  queueing request at position #", len(q.entries))
+		newEntry.sendReply(q.ctx, q.getQueuePositionString(len(q.entries)))
+	}
 
 	q.entries = append(q.entries, newEntry)
 	q.mutex.Unlock()
@@ -138,10 +138,6 @@ func (q *DownloadQueue) CancelCurrentEntry(ctx context.Context) (err error) {
 
 func (q *DownloadQueue) getQueuePositionString(pos int) string {
 	return "👨‍👦‍👦 Request queued at position #" + fmt.Sprint(pos)
-}
-
-func (q *DownloadQueue) sendProgressReply(qEntry *DownloadQueueEntry, progress int) {
-	qEntry.sendReply(q.ctx, processStr+" "+getProgressbar(progress, progressBarLength)+"\n"+qEntry.RenderParamsText)
 }
 
 func (q *DownloadQueue) queryProgress(qEntry *DownloadQueueEntry, prevProgress int) (progress int, imgs [][]byte, err error) {
@@ -185,30 +181,43 @@ func (q *DownloadQueue) processQueueEntry(renderCtx context.Context, qEntry *Dow
 	}
 	fmt.Println("  render started with task id", qEntry.TaskID)
 
-	progress, imgs, err := q.queryProgress(qEntry, 0)
-	if err != nil {
-		return err
+	progressUpdateInterval := groupChatProgressUpdateInterval
+	if qEntry.Message.Chat.ID >= 0 {
+		progressUpdateInterval = privateChatProgressUpdateInterval
 	}
-	if imgs == nil {
-		q.sendProgressReply(qEntry, progress)
+	progressPercentUpdateTicker := time.NewTicker(progressUpdateInterval)
+	defer func() {
+		progressPercentUpdateTicker.Stop()
+		select {
+		case <-progressPercentUpdateTicker.C:
+		default:
+		}
+	}()
+	progressCheckTicker := time.NewTicker(100 * time.Millisecond)
+	defer func() {
+		progressCheckTicker.Stop()
+		select {
+		case <-progressCheckTicker.C:
+		default:
+		}
+	}()
 
-		progressPercentUpdateTicker := time.NewTicker(500 * time.Millisecond)
-		progressCheckTicker := time.NewTicker(100 * time.Millisecond)
-	checkLoop:
-		for {
-			select {
-			case <-renderCtx.Done():
-				return fmt.Errorf("timeout")
-			case <-progressPercentUpdateTicker.C:
-				q.sendProgressReply(qEntry, progress)
-			case <-progressCheckTicker.C:
-				progress, imgs, err = q.queryProgress(qEntry, progress)
-				if err != nil {
-					return err
-				}
-				if imgs != nil {
-					break checkLoop
-				}
+	var progress int
+	var imgs [][]byte
+checkLoop:
+	for {
+		select {
+		case <-renderCtx.Done():
+			return fmt.Errorf("timeout")
+		case <-progressPercentUpdateTicker.C:
+			qEntry.sendReply(q.ctx, processStr+" "+getProgressbar(progress, progressBarLength)+"\n"+qEntry.RenderParamsText)
+		case <-progressCheckTicker.C:
+			progress, imgs, err = q.queryProgress(qEntry, progress)
+			if err != nil {
+				return err
+			}
+			if imgs != nil {
+				break checkLoop
 			}
 		}
 	}

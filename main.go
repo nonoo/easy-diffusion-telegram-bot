@@ -20,11 +20,15 @@ var req ReqType
 var dlQueue DownloadQueue
 
 func sendReplyToMessage(ctx context.Context, replyToMsg *models.Message, s string) (msg *models.Message) {
-	msg, _ = telegramBot.SendMessage(ctx, &bot.SendMessageParams{
+	var err error
+	msg, err = telegramBot.SendMessage(ctx, &bot.SendMessageParams{
 		ReplyToMessageID: replyToMsg.ID,
 		ChatID:           replyToMsg.Chat.ID,
 		Text:             s,
 	})
+	if err != nil {
+		fmt.Println("  reply send error:", err)
+	}
 	return
 }
 
