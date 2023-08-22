@@ -150,7 +150,7 @@ func handleCmdHelp(ctx context.Context, msg *models.Message) {
 }
 
 func telegramBotUpdateHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	if update.Message == nil { // Only handling message updates.
+	if update.Message == nil || update.Message.Text == "" { // Only handling message updates.
 		return
 	}
 
