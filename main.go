@@ -217,7 +217,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	startEasyDiffusionIfNeeded()
+	if !params.DelayedEDStart {
+		if err := startEasyDiffusionIfNeeded(); err != nil {
+			panic(err.Error())
+		}
+	}
 
 	var cancel context.CancelFunc
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)

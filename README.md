@@ -60,6 +60,7 @@ variable. Available OS environment variables are:
 - `ALLOWED_USERIDS`
 - `ADMIN_USERIDS`
 - `ALLOWED_GROUPIDS`
+- `DELAYED_ED_START`
 
 ## Supported commands
 

@@ -3,8 +3,10 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/go-telegram/bot"
@@ -17,6 +19,8 @@ const progressBarLength = 20
 const uploadingStr = "☁ ️ Uploading..."
 const errorStr = "❌ Error"
 const canceledStr = "❌ Canceled"
+const restartStr = "⚠️ Easy Diffusion is not running, starting, please wait..."
+const restartFailedStr = "☠️ Easy Diffusion start failed, please restart the bot"
 
 const processTimeout = 3 * time.Minute
 
@@ -152,7 +156,7 @@ func (q *DownloadQueue) queryProgress(qEntry *DownloadQueueEntry, prevProgress i
 	return
 }
 
-func (q *DownloadQueue) processQueueEntry(renderCtx context.Context, qEntry *DownloadQueueEntry) error {
+func (q *DownloadQueue) processQueueEntry(renderCtx context.Context, qEntry *DownloadQueueEntry, retryAllowed bool) error {
 	fmt.Print("processing request from ", qEntry.Message.From.Username, "#", qEntry.Message.From.ID, ": ", qEntry.Params.Prompt, "\n")
 
 	qEntry.RenderParamsText = fmt.Sprintf("🌱0x%X 👟%d 🕹%.1f 🖼%dx%dx%d 🔭%s", qEntry.Params.Seed, qEntry.Params.NumInferenceSteps,
@@ -163,6 +167,20 @@ func (q *DownloadQueue) processQueueEntry(renderCtx context.Context, qEntry *Dow
 	var err error
 	qEntry.TaskID, err = req.Render(qEntry.Params)
 	if err != nil {
+		if errors.Is(err, syscall.ECONNREFUSED) { // Can't connect to Easy Diffusion?
+			qEntry.sendReply(q.ctx, restartStr)
+			err := startEasyDiffusionIfNeeded()
+			if err != nil {
+				fmt.Println("  error:", err)
+				qEntry.sendReply(q.ctx, restartFailedStr+": "+err.Error())
+				panic(err.Error())
+			}
+			if retryAllowed {
+				return q.processQueueEntry(renderCtx, qEntry, false)
+			} else {
+				return nil
+			}
+		}
 		return err
 	}
 	fmt.Println("  render started with task id", qEntry.TaskID)
@@ -223,7 +241,7 @@ func (q *DownloadQueue) processor() {
 		renderCtx, q.currentEntry.ctxCancel = context.WithTimeout(q.ctx, processTimeout)
 		q.mutex.Unlock()
 
-		err := q.processQueueEntry(renderCtx, qEntry)
+		err := q.processQueueEntry(renderCtx, qEntry, true)
 
 		q.mutex.Lock()
 		if q.currentEntry.canceled {

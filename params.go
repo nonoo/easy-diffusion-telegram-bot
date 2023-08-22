@@ -17,6 +17,8 @@ type paramsType struct {
 	AllowedUserIDs  []int64
 	AdminUserIDs    []int64
 	AllowedGroupIDs []int64
+
+	DelayedEDStart bool
 }
 
 var params paramsType
@@ -30,6 +32,7 @@ func (p *paramsType) Init() error {
 	flag.StringVar(&adminUserIDs, "admin-user-ids", "", "admin telegram user ids")
 	var allowedGroupIDs string
 	flag.StringVar(&allowedGroupIDs, "allowed-group-ids", "", "allowed telegram group ids")
+	flag.BoolVar(&p.DelayedEDStart, "delayed-ed-start", false, "start easy diffusion only when the first prompt arrives")
 	flag.Parse()
 
 	if p.BotToken == "" {
@@ -92,6 +95,15 @@ func (p *paramsType) Init() error {
 			return fmt.Errorf("allowed group ids contains invalid group ID: " + idStr)
 		}
 		p.AllowedGroupIDs = append(p.AllowedGroupIDs, id)
+	}
+
+	s := os.Getenv("DELAYED_ED_START")
+	if s != "" {
+		if s == "0" {
+			p.DelayedEDStart = false
+		} else {
+			p.DelayedEDStart = true
+		}
 	}
 
 	return nil
