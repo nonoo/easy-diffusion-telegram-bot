@@ -171,6 +171,9 @@ func (r *ReqType) processProgressSection(section string) (progress int, imgs [][
 	if marshalErr := json.Unmarshal([]byte(section), &progressResp); marshalErr == nil {
 		if progressResp.TotalSteps > 0 {
 			progress = int(float32(progressResp.Step*100) / float32(progressResp.TotalSteps))
+			if progress > 100 {
+				progress = 100
+			}
 		}
 	}
 
