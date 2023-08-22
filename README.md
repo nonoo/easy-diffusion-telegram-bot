@@ -95,7 +95,7 @@ You can use the following `attr:val` assignments in the prompt:
   - `dpm_solver_stability`
   - `dpmpp_2s_a`
   - `dpmpp_2m`
-  - `dpmpp_2m_sde"`
+  - `dpmpp_2m_sde`
   - `dpmpp_sde`
   - `dpm_adaptive`
   - `ddpm`
