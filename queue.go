@@ -191,8 +191,12 @@ func (q *DownloadQueue) queryProgress(qEntry *DownloadQueueEntry, prevProgress i
 func (q *DownloadQueue) processQueueEntry(renderCtx context.Context, qEntry *DownloadQueueEntry, retryAllowed bool) error {
 	fmt.Print("processing request from ", qEntry.Message.From.Username, "#", qEntry.Message.From.ID, ": ", qEntry.Params.Prompt, "\n")
 
-	qEntry.RenderParamsText = fmt.Sprintf("🌱0x%X 👟%d 🕹%.1f 🖼%dx%dx%d 🔭%s 🧩%s", qEntry.Params.Seed, qEntry.Params.NumInferenceSteps,
-		qEntry.Params.GuidanceScale, qEntry.Params.Width, qEntry.Params.Height, qEntry.Params.NumOutputs, qEntry.Params.SamplerName,
+	var numOutputs string
+	if qEntry.Params.NumOutputs > 1 {
+		numOutputs = fmt.Sprintf("x%d", qEntry.Params.NumOutputs)
+	}
+	qEntry.RenderParamsText = fmt.Sprintf("🌱0x%X 👟%d 🕹%.1f 🖼%dx%d%s 🔭%s 🧩%s", qEntry.Params.Seed, qEntry.Params.NumInferenceSteps,
+		qEntry.Params.GuidanceScale, qEntry.Params.Width, qEntry.Params.Height, numOutputs, qEntry.Params.SamplerName,
 		qEntry.Params.ModelName)
 
 	if qEntry.Params.NegativePrompt != "" {
