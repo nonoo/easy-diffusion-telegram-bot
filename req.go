@@ -107,9 +107,15 @@ type RenderParams struct {
 	NumOutputs        int
 	GuidanceScale     float32
 	SamplerName       string
+	ModelVersion      int
 }
 
 func (r *ReqType) Render(params RenderParams) (taskID uint64, err error) {
+	model := "sd-v1-4"
+	if params.ModelVersion == 2 {
+		model = "768-v-ema"
+	}
+
 	postData, err := json.Marshal(RenderReq{
 		GuidanceScale:           params.GuidanceScale,
 		Height:                  uint32(params.Height),
@@ -126,7 +132,7 @@ func (r *ReqType) Render(params RenderParams) (taskID uint64, err error) {
 		ShowOnlyFilteredImage:   true,
 		StreamProgressUpdates:   true,
 		Tiling:                  "none",
-		UseStableDiffusionModel: "sd-v1-4",
+		UseStableDiffusionModel: model,
 		UsedRandomSeed:          true,
 		VRAMUsageLevel:          "high",
 		Width:                   uint32(params.Width),

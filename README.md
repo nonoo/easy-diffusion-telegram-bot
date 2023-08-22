@@ -105,6 +105,7 @@ You can use the following `attr:val` assignments in the prompt:
   - `unipc_snr_2`
   - `unipc_tu_2`
   - `unipc_tq`
+- `model/m` - set model version (default is 1)
 
 Example prompt with attributes: `laughing santa with beer s:1 o:1`
 

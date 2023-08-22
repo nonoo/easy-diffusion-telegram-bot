@@ -42,6 +42,7 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 		NumOutputs:        4,
 		GuidanceScale:     7.5,
 		SamplerName:       "euler_a",
+		ModelVersion:      1,
 	}
 
 	var prompt []string
@@ -117,6 +118,14 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 					sendReplyToMessage(ctx, msg, errorStr+": invalid sampler")
 					return
 				}
+			case "model", "m":
+				valInt, err := strconv.Atoi(val)
+				if err != nil {
+					fmt.Println("  invalid model version")
+					sendReplyToMessage(ctx, msg, errorStr+": invalid model version")
+					return
+				}
+				renderParams.ModelVersion = valInt
 			default:
 				fmt.Println("  invalid attribute", attr)
 				sendReplyToMessage(ctx, msg, errorStr+": invalid attribute "+attr)
