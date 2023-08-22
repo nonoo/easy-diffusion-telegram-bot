@@ -105,7 +105,7 @@ You can use the following `attr:val` assignments in the prompt:
   - `unipc_snr_2`
   - `unipc_tu_2`
   - `unipc_tq`
-- `model/m` - set model version (default is 1)
+- `model/m` - set model version (default is 2 using [768-v-ema.ckpt](https://huggingface.co/stabilityai/stable-diffusion-2)
 
 Example prompt with attributes: `laughing santa with beer s:1 o:1`
 
