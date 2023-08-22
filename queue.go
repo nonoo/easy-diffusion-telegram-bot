@@ -40,6 +40,7 @@ func (e *DownloadQueueEntry) sendReply(ctx context.Context, s string) {
 	if e.ReplyMessage == nil {
 		e.ReplyMessage = sendReplyToMessage(ctx, e.Message, s)
 	} else if e.ReplyMessage.Text != s {
+		e.ReplyMessage.Text = s
 		_, err := telegramBot.EditMessageText(ctx, &bot.EditMessageTextParams{
 			MessageID: e.ReplyMessage.ID,
 			ChatID:    e.ReplyMessage.Chat.ID,
