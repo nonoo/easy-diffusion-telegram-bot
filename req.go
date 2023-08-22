@@ -100,6 +100,7 @@ type RenderReq struct {
 type RenderParams struct {
 	Prompt            string
 	OrigPrompt        string
+	NegativePrompt    string
 	Seed              uint32
 	Width             int
 	Height            int
@@ -115,6 +116,7 @@ func (r *ReqType) Render(params RenderParams) (taskID uint64, err error) {
 		GuidanceScale:           params.GuidanceScale,
 		Height:                  uint32(params.Height),
 		MetadataOutputFormat:    "none",
+		NegativePrompt:          params.NegativePrompt,
 		NumInferenceSteps:       uint32(params.NumInferenceSteps),
 		NumOutputs:              uint32(params.NumOutputs),
 		OriginalPrompt:          params.Prompt,

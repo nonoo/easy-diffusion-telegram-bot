@@ -41,7 +41,7 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 		NumInferenceSteps: 20,
 		NumOutputs:        4,
 		GuidanceScale:     7,
-		SamplerName:       "dpmpp_2m_sde",
+		SamplerName:       "dpmpp_sde",
 		ModelName:         "v1-5",
 	}
 
@@ -121,6 +121,11 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 				}
 			case "model", "m":
 				renderParams.ModelName = val
+			case "-":
+				if renderParams.NegativePrompt != "" {
+					renderParams.NegativePrompt += ", "
+				}
+				renderParams.NegativePrompt += strings.ReplaceAll(val, "_", " ")
 			default:
 				fmt.Println("  invalid attribute", attr)
 				sendReplyToMessage(ctx, msg, errorStr+": invalid attribute "+attr)
