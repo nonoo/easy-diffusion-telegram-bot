@@ -136,7 +136,7 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 			if renderParams.NegativePrompt != "" {
 				renderParams.NegativePrompt += ", "
 			}
-			renderParams.NegativePrompt += strings.ReplaceAll(words[i], "_", " ")
+			renderParams.NegativePrompt += strings.ReplaceAll(words[i][1:], "_", " ")
 		}
 	}
 
