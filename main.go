@@ -58,6 +58,7 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 
 			switch attr {
 			case "seed", "s":
+				val = strings.TrimPrefix(val, "🌱")
 				val = strings.TrimPrefix(val, "0x")
 				valInt := new(big.Int)
 				if _, ok := valInt.SetString(val, 16); !ok {
