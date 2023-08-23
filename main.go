@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -157,6 +158,26 @@ func handleCmdEDCancel(ctx context.Context, msg *models.Message) {
 	}
 }
 
+func handleCmdModels(ctx context.Context, msg *models.Message) {
+	modelsDir := filepath.Join(filepath.Dir(params.EasyDiffusionPath), "models", "stable-diffusion")
+	files, err := os.ReadDir(modelsDir)
+	if err != nil {
+		fmt.Println("  can't list models directory:", err)
+		sendReplyToMessage(ctx, msg, errorStr+": can't list models directory: "+err.Error())
+		return
+	}
+	var models []string
+	for _, file := range files {
+		fn := file.Name()
+		ext := filepath.Ext(fn)
+		switch ext {
+		case ".safetensors", ".ckpt":
+			models = append(models, strings.TrimSuffix(fn, ext))
+		}
+	}
+	sendReplyToMessage(ctx, msg, "🤖 Available models: "+strings.Join(models, ", ")+". Default: "+params.DefaultModel)
+}
+
 func handleCmdHelp(ctx context.Context, msg *models.Message) {
 	sendReplyToMessage(ctx, msg, "🤖 Easy Diffusion Telegram Bot\n\n"+
 		"Available commands:\n\n"+
@@ -204,6 +225,9 @@ func telegramBotUpdateHandler(ctx context.Context, b *bot.Bot, update *models.Up
 			return
 		case "edhelp":
 			handleCmdHelp(ctx, update.Message)
+			return
+		case "edmodels":
+			handleCmdModels(ctx, update.Message)
 			return
 		case "start":
 			fmt.Println("  (start cmd)")
