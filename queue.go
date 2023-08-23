@@ -82,6 +82,9 @@ func (e *DownloadQueueEntry) sendImages(ctx context.Context, imgs [][]byte, retr
 		var c string
 		if i == 0 {
 			c = e.Params.OrigPrompt + " (" + e.RenderParamsText + ")"
+			if len(c) > 1024 {
+				c = c[:1021] + "..."
+			}
 		}
 		media = append(media, &models.InputMediaPhoto{
 			Media:           fmt.Sprintf("attach://ed-image-%x-%d-%d.jpg", e.Params.Seed, e.TaskID, i),
