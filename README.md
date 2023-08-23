@@ -68,6 +68,8 @@ variable. Available OS environment variables are:
 
 - `/ed` - Render images using supplied prompt
 - `/edcancel` - Cancel ongoing download
+- `/edmodels` - List available models
+- `/edembeddings` - List available embeddings
 - `/edhelp` - Cancel ongoing download
 
 You can also use the `!` command character instead of `/`.
