@@ -1,5 +1,7 @@
 # easy-diffusion-telegram-bot
 
+**NOTE: this repo is no longer maintained. User [this](https://github.com/nonoo/stable-diffusion-telegram-bot) instead.**
+
 This is a Telegram Bot frontend for rendering images with
 [Easy Diffusion](https://github.com/easydiffusion/easydiffusion).
 
