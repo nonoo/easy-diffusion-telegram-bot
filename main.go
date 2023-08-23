@@ -207,6 +207,8 @@ func handleCmdHelp(ctx context.Context, msg *models.Message) {
 		"Available commands:\n\n"+
 		"!ed [prompt] - render prompt\n"+
 		"!edcancel - cancel current render\n"+
+		"!edmodels - list available models\n"+
+		"!edembeddings - list available embeddings\n"+
 		"!edhelp - show this help\n\n"+
 		"For more information see https://github.com/nonoo/easy-diffusion-telegram-bot")
 }
@@ -247,14 +249,14 @@ func telegramBotUpdateHandler(ctx context.Context, b *bot.Bot, update *models.Up
 		case "edcancel":
 			handleCmdEDCancel(ctx, update.Message)
 			return
-		case "edhelp":
-			handleCmdHelp(ctx, update.Message)
-			return
 		case "edmodels":
 			handleCmdModels(ctx, update.Message)
 			return
 		case "edembeddings":
 			handleCmdEmbeddings(ctx, update.Message)
+			return
+		case "edhelp":
+			handleCmdHelp(ctx, update.Message)
 			return
 		case "start":
 			fmt.Println("  (start cmd)")
