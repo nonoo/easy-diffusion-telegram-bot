@@ -51,9 +51,14 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 	for i := range words {
 		words[i] = strings.TrimSpace(words[i])
 
+		if words[i][0] != '-' { // Only process words starting with -
+			prompt = append(prompt, words[i])
+			continue
+		}
+
 		splitword := strings.Split(words[i], ":")
 		if len(splitword) == 2 {
-			attr := strings.ToLower(splitword[0])
+			attr := strings.ToLower(splitword[0][1:])
 			val := splitword[1]
 
 			switch attr {
@@ -122,18 +127,16 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 				}
 			case "model", "m":
 				renderParams.ModelName = val
-			case "-":
-				if renderParams.NegativePrompt != "" {
-					renderParams.NegativePrompt += ", "
-				}
-				renderParams.NegativePrompt += strings.ReplaceAll(val, "_", " ")
 			default:
 				fmt.Println("  invalid attribute", attr)
 				sendReplyToMessage(ctx, msg, errorStr+": invalid attribute "+attr)
 				return
 			}
 		} else {
-			prompt = append(prompt, words[i])
+			if renderParams.NegativePrompt != "" {
+				renderParams.NegativePrompt += ", "
+			}
+			renderParams.NegativePrompt += strings.ReplaceAll(words[i], "_", " ")
 		}
 	}
 

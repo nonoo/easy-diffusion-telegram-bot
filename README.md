@@ -77,7 +77,7 @@ a private chat.
 
 ### Setting render parameters
 
-You can use the following `attr:val` assignments in the prompt:
+You can use the following `-attr:val` assignments in the prompt:
 
 - `seed/s` - set seed (hexadecimal)
 - `width/w` - set output image width
@@ -112,8 +112,8 @@ You can use the following `attr:val` assignments in the prompt:
   - 2: [v1-5-pruned-emaonly](https://huggingface.co/runwayml/stable-diffusion-v1-5)
   - 3: [768-v-ema](https://huggingface.co/stabilityai/stable-diffusion-2)
 
-Example prompt with attributes: `laughing santa with beer s:1 o:1`
-Negative prompt example: `laughing santa with beer -:red_hat -:beer` (negative prompt will be translated to `red hat, beer`)
+Example prompt with attributes: `laughing santa with beer -s:1 -o:1`
+Negative prompt example: `laughing santa with beer -red_hat -beer` (negative prompt will be translated to `red hat, beer`)
 
 ## Donations
 
