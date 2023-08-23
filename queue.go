@@ -203,7 +203,11 @@ func (q *DownloadQueue) processQueueEntry(renderCtx context.Context, qEntry *Dow
 		qEntry.Params.ModelName)
 
 	if qEntry.Params.NegativePrompt != "" {
-		qEntry.RenderParamsText = "📍" + qEntry.Params.NegativePrompt + " " + qEntry.RenderParamsText
+		negText := qEntry.Params.NegativePrompt
+		if len(negText) > 10 {
+			negText = negText[:10] + "..."
+		}
+		qEntry.RenderParamsText = "📍" + negText + " " + qEntry.RenderParamsText
 	}
 
 	qEntry.sendReply(q.ctx, processStartStr+"\n"+qEntry.RenderParamsText)
