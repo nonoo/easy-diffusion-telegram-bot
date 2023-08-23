@@ -47,8 +47,17 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 	}
 
 	var prompt []string
+	var promptLine string
 
-	words := strings.Split(msg.Text, " ")
+	lines := strings.Split(msg.Text, "\n")
+	if len(lines) == 2 {
+		promptLine = strings.TrimSpace(lines[0])
+		renderParams.NegativePrompt = strings.TrimSpace(lines[1])
+	} else {
+		promptLine = strings.TrimSpace(msg.Text)
+	}
+
+	words := strings.Split(promptLine, " ")
 	for i := range words {
 		words[i] = strings.TrimSpace(words[i])
 
@@ -133,11 +142,6 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 				sendReplyToMessage(ctx, msg, errorStr+": invalid attribute "+attr)
 				return
 			}
-		} else {
-			if renderParams.NegativePrompt != "" {
-				renderParams.NegativePrompt += ", "
-			}
-			renderParams.NegativePrompt += strings.ReplaceAll(words[i][1:], "_", " ")
 		}
 	}
 
