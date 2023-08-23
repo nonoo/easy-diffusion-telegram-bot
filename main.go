@@ -175,7 +175,7 @@ func handleCmdModels(ctx context.Context, msg *models.Message) {
 			models = append(models, strings.TrimSuffix(fn, ext))
 		}
 	}
-	sendReplyToMessage(ctx, msg, "🤖 Available models: "+strings.Join(models, ", ")+". Default: "+params.DefaultModel)
+	sendReplyToMessage(ctx, msg, "🧩 Available models: "+strings.Join(models, ", ")+". Default: "+params.DefaultModel)
 }
 
 func handleCmdHelp(ctx context.Context, msg *models.Message) {
