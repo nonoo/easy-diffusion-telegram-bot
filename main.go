@@ -50,9 +50,9 @@ func handleCmdED(ctx context.Context, msg *models.Message) {
 	var promptLine string
 
 	lines := strings.Split(msg.Text, "\n")
-	if len(lines) == 2 {
+	if len(lines) >= 2 {
 		promptLine = strings.TrimSpace(lines[0])
-		renderParams.NegativePrompt = strings.TrimSpace(lines[1])
+		renderParams.NegativePrompt = strings.TrimSpace(strings.Join(lines[1:], " "))
 	} else {
 		promptLine = strings.TrimSpace(msg.Text)
 	}
